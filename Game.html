@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game</title>
+</head>
+<body>
+    <canvas id="canvas" style="border: 2px solid; width:400px; height:800px">
+    </canvas>
+    <script src="Platform.js"></script>
+    <script src="game.js"></script>
+    <script>
+
+        //drawing the canvas
+        var canvas = document.getElementById("canvas");
+        canvas.width = canvas.scrollWidth;
+        canvas.height = canvas.scrollHeight;
+        var ctx = canvas.getContext("2d");
+        var platforms = [];
+
+        //the ball
+        var ball ={x:198, y:790, width:10, height:10, vx:0, vy:0.5, g:-0.1,
+            draw:drawBall,
+            tick:tickBall,
+            keyDown:keyDown,
+            leftKey:37,
+            rightKey:39};
+
+
+        function drawBall() {
+            ctx.fillStyle = "red";
+
+            ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
+            //setTimeout(drawBall, 16);
+            //console.log("draw")
+        }
+
+        function tickBall() {
+            ball.x = ball.x+ball.vx;
+            ball.y = ball.y- ball.vy;
+            ball.vy = ball.vy + ball.g;
+            if (ball.y > canvas.height){
+                ball.vy = 10;
+            }
+            if (ball.x < 0){ball.x = canvas.width}
+            if (ball.x > canvas.width){ball.x = 0}
+           // console.log("y:"+ball.y+") vy:"+ ball.vy)
+        }
+         function keyDown(key){
+            if (key == this.leftKey) {this.vx = this.vx -0.2}
+
+            if (key == this.rightKey){this.vx = this.vx +0.2}
+            console.log(this.vx);
+        }
+        //the platform
+
+
+
+
+
+        function checkCollision(platform, ball) {
+            var px  = platform.x;
+            var py  = platform.y;
+            var pw  = platform.width;
+            var ph  = platform.height;
+            var bx  = ball.x;
+            var by  = ball.y;
+            var bh  = ball.height;
+            var bw  = ball.width;
+            var bvx = ball.vx;
+
+            if (((bx + bw) > px) && (bx < (px+pw))){
+                if (((by+bh)> py)&&(by <(py+ph))){
+                 return true;
+                }
+            }
+            return false;
+        }
+        //create random platforms
+        function createPlatform(){
+             if (game.platformCreateCountDown-- <0){
+                 platforms.push(new Platform(0, 0, 40, 10, 0, -.5, 0));
+                 game.platformCreateCountDown = game.platformCreateRate;
+             }
+        }
+
+
+        function tickAll(){
+            ball.tick();
+            createPlatform();
+            var len = platforms.length;
+            for (var i=0;i<len;i++){
+                platforms[i].tick();
+            }
+            drawAll();
+        }
+        function drawAll(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ball.draw();
+            var len = platforms.length;
+            for (var i=0;i<len;i++){
+                platforms[i].draw();
+            }
+
+        }
+        function initiliseAll(){
+
+            setInterval(tickAll,15);
+        }
+       //window.requestAnimationFrame(drawBall);
+        //drawBall();
+        initiliseAll();
+
+
+        window.addEventListener("keydown",function (event) {
+            var key = event.keyCode;
+            //console.log("moving  "+ event.keyCode)
+            ball.keyDown(key);
+        });
+    </script>
+
+</body>
+</html>
