@@ -89,7 +89,7 @@
                  game.platformCreateCountDown = game.platformCreateRate+game.score;
              }
         }
-        //the score
+
 
         function tickAll(){
             ball.tick();
@@ -97,6 +97,10 @@
             var len = platforms.length;
             for (var i=0;i<len;i++){
                 platforms[i].tick();
+            }
+            var len = startPlatform.length;
+            for (var i=0;i<len;i++){
+                startPlatform[i].tick();
             }
             drawAll();
         }
@@ -109,9 +113,21 @@
             }
             var scoreBoard = document.getElementById("score");
             scoreBoard.innerHTML = game.score;
-
-
+            var len = startPlatform.length;
+            for (var i=0;i<len;i++){
+                startPlatform[i].draw();
+            }
         }
+        // end the game
+        function killBall() {
+            var by = ball.y;
+            console.log(by);
+           // if(by == 800){ctx.clearRect(0,0, canvas.width,canvas.height)};
+            console.log(by+"me");
+        }
+        killBall();
+
+
         function initiliseAll(){
 
             setInterval(tickAll,15);
