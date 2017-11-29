@@ -7,142 +7,156 @@
 <body>
 <h1>Your Score</h1>
 <h2 id="score">0</h2>
-    <canvas id="canvas" style="border: 2px solid; width:400px; height:800px">
-    </canvas>
-    <script src="Platform.js"></script>
-    <script src="game.js"></script>
-    <script>
+<canvas id="canvas" style="border: 2px solid; width:400px; height:800px">
+</canvas>
+<script src="Platform.js"></script>
+<script src="game.js"></script>
+<script>
 
-        //drawing the canvas
-        var canvas = document.getElementById("canvas");
-        canvas.width = canvas.scrollWidth;
-        canvas.height = canvas.scrollHeight;
-        var ctx = canvas.getContext("2d");
-        var platforms = [];
+    //drawing the canvas
+    var canvas = document.getElementById("canvas");
+    canvas.width = canvas.scrollWidth;
+    canvas.height = canvas.scrollHeight;
+    var ctx = canvas.getContext("2d");
+    var platforms = [];
 
-        //the ball
-        var ball ={x:198, y:790, width:10, height:10, vx:0, vy:0.5, g:-0.1,
-            draw:drawBall,
-            tick:tickBall,
-            keyDown:keyDown,
-            leftKey:37,
-            rightKey:39};
+    //the ball
+    var ball ={x:198, y:700, width:10, height:10, vx:0, vy:0.5, g:-0.1,
+        draw:drawBall,
+        tick:tickBall,
+        keyDown:keyDown,
+        leftKey:37,
+        rightKey:39};
 
 
-        function drawBall() {
-            ctx.fillStyle = "red";
+    function drawBall() {
+        ctx.fillStyle = "red";
 
-            ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
-            //setTimeout(drawBall, 16);
-            //console.log("draw")
+        ctx.fillRect(ball.x, ball.y, ball.width, ball.height);
+        //setTimeout(drawBall, 16);
+        //console.log("draw")
+    }
+
+    function tickBall() {
+        ball.x = ball.x+ball.vx;
+        ball.y = ball.y- ball.vy;
+        ball.vy = ball.vy + ball.g;
+        if (ball.y > canvas.height){
+            killBall();
         }
+        if (ball.x < 0){ball.x = canvas.width}
+        if (ball.x > canvas.width){ball.x = 0}
+        // console.log("y:"+ball.y+") vy:"+ ball.vy)
 
-        function tickBall() {
-            ball.x = ball.x+ball.vx;
-            ball.y = ball.y- ball.vy;
-            ball.vy = ball.vy + ball.g;
-            if (ball.y > canvas.height){
-                ball.vy = 10;
-            }
-            if (ball.x < 0){ball.x = canvas.width}
-            if (ball.x > canvas.width){ball.x = 0}
-           // console.log("y:"+ball.y+") vy:"+ ball.vy)
-        }
-         function keyDown(key){
-            if (key == this.leftKey) {
-                if (this.vx > -3) {
-                    this.vx = this.vx - 0.5
-                }
-            }
-            if (key == this.rightKey) {
-                if (this.vx < 3) {
-                    this.vx = this.vx + 0.5
-                }
-            }
-             console.log(this.vx);
-        }
-        //the platform
-        function checkCollision(platform, ball) {
-            var px  = platform.x;
-            var py  = platform.y;
-            var pw  = platform.width;
-            var ph  = platform.height;
-            var bx  = ball.x;
-            var by  = ball.y;
-            var bh  = ball.height;
-            var bw  = ball.width;
-            var bvx = ball.vx;
-
-            if (((bx + bw) > px) && (bx < (px+pw))){
-                if (((by+bh)> py)&&(by <(py+ph))){
-                    game.score++;
-                    return true;
-                }
-            }
-            return false;
-            console.log(checkCollision)
-        }
-        //create random platforms
-        function createPlatform(){
-             if (game.platformCreateCountDown-- <0){
-                 platforms.push(new Platform(0 , 0, 40, 10, 0, -.5, 0));
-                 game.platformCreateCountDown = game.platformCreateRate+game.score;
-             }
-        }
-
-
-        function tickAll(){
-            ball.tick();
-            createPlatform();
-            var len = platforms.length;
-            for (var i=0;i<len;i++){
-                platforms[i].tick();
-            }
-            var len = startPlatform.length;
-            for (var i=0;i<len;i++){
-                startPlatform[i].tick();
-            }
-            drawAll();
-        }
-        function drawAll(){
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ball.draw();
-            var len = platforms.length;
-            for (var i=0;i<len;i++){
-                platforms[i].draw();
-            }
-            var scoreBoard = document.getElementById("score");
-            scoreBoard.innerHTML = game.score;
-            var len = startPlatform.length;
-            for (var i=0;i<len;i++){
-                startPlatform[i].draw();
+    }
+    function keyDown(key){
+        //console.log("handling ball key");
+        if (key == this.leftKey) {
+            if (this.vx > -3) {
+                this.vx = this.vx - 0.5
             }
         }
-        // end the game
-        function killBall() {
-            var by = ball.y;
-            console.log(by);
-           // if(by == 800){ctx.clearRect(0,0, canvas.width,canvas.height)};
-            console.log(by+"me");
+        if (key == this.rightKey) {
+            if (this.vx < 3) {
+                this.vx = this.vx + 0.5
+            }
         }
-        killBall();
+        console.log(this.vx);
+    }
+    //the platform
+    function checkCollision(platform, ball) {
+        var px  = platform.x;
+        var py  = platform.y;
+        var pw  = platform.width;
+        var ph  = platform.height;
+        var bx  = ball.x;
+        var by  = ball.y;
+        var bh  = ball.height;
+        var bw  = ball.width;
+        var bvx = ball.vx;
 
-
-        function initiliseAll(){
-
-            setInterval(tickAll,15);
+        if (((bx + bw) > px) && (bx < (px+pw))){
+            if (((by+bh)> py)&&(by <(py+ph))){
+                game.score++;
+                return true;
+            }
         }
-       //window.requestAnimationFrame(drawBall);
-        //drawBall();
-        initiliseAll();
+        return false;
+        console.log(checkCollision)
+    }
+    //create random platforms
+    function createPlatform(){
+        if (game.platformCreateCountDown-- <0){
+            platforms.push(new Platform(0 , 0, 40, 10, 0, -.5, 0));
+            game.platformCreateCountDown = game.platformCreateRate+game.score;
+        }
+    }
 
 
-        window.addEventListener("keydown",function (event) {
-            var key = event.keyCode;
-            console.log("moving  "+ event.keyCode)
-            ball.keyDown(key);
-        });
-    </script>
+    function tickAll(){
+        ball.tick();
+        createPlatform();
+        var len = platforms.length;
+        for (var i=0;i<len;i++){
+            platforms[i].tick();
+        }
+        var len = startPlatform.length;
+        for (var i=0;i<len;i++){
+            startPlatform[i].tick();
+        }
+        drawAll();
+    }
+    function drawAll(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ball.draw();
+        var len = platforms.length;
+        for (var i=0;i<len;i++){
+            platforms[i].draw();
+        }
+        var scoreBoard = document.getElementById("score");
+        scoreBoard.innerHTML = game.score;
+        var len = startPlatform.length;
+        for (var i=0;i<len;i++){
+            startPlatform[i].draw();
+        }
+    }
+    // end the game
+    function killBall() {
+        ball.x = -10;
+        ball.y = 400;
+        ball.vy = 0;
+        ball.g = 0;
+        keyHandler = pressAnyKeyToStart;
+    }
+    var keyHandler = pressAnyKeyToStart;
+    function pressAnyKeyToStart(key){
+        initialiseAll();
+
+        keyHandler = gameOn;
+    }
+    function gameOn(key){
+        ball.keyDown(key);
+    }
+
+    function initialiseAll(){
+        ball.x=100;
+        ball.y=400;
+        ball.g = -.1;
+        ball.vy = 0.5;
+    }
+    //window.requestAnimationFrame(drawBall);
+    //drawBall();
+    initialiseAll();
+
+
+    window.addEventListener("keydown",function (event) {
+        var key = event.keyCode;
+        console.log("moving  "+ event.keyCode)
+        keyHandler(key);
+    });
+    setInterval(tickAll,15);
+
+</script>
 
 </body>
 </html>
